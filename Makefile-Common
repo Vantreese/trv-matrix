@@ -1,0 +1,27 @@
+
+all : $(INSTALLBINDIR) $(INSTALLBINDIR)/coded$(EXE) $(INSTALLBINDIR)/genmtx$(EXE) $(INSTALLBINDIR)/matrix$(EXE)
+
+$(INSTALLBINDIR) :
+	install -d $(INSTALLBINDIR)
+
+$(INSTALLBINDIR)/coded$(EXE) : coded.c $(LIBRARIES)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(INSTALLBINDIR)/coded$(EXE) coded.c -lesun -lm
+
+$(INSTALLBINDIR)/genmtx$(EXE) : genmtx.c matrix.h mtx_random.o libxmatrix.o $(LIBRARIES)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(INSTALLBINDIR)/genmtx$(EXE) genmtx.c mtx_random.o libxmatrix.o -lesun -lm
+
+$(INSTALLBINDIR)/matrix$(EXE) : matrix.c matrix.h mtx_random.o transform.o libxmatrix.o libimports.o libbmp.o libter.o $(LIBRARIES)
+	$(CC) $(CFLAGS) $(LDFLAGS) -o $(INSTALLBINDIR)/matrix$(EXE) matrix.c mtx_random.o transform.o libxmatrix.o libimports.o libbmp.o libter.o -lesun -lm
+
+clean :
+	rm -f *.o
+
+# Do not compile optimized.
+mtx_random.o : mtx_random.c
+	$(CC) -c mtx_random.c
+
+# Required by DMAKE.
+.c.o :
+	$(CC) $(CFLAGS) -c $*.c
+
+
